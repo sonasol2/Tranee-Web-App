@@ -18,13 +18,34 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult GetTasks()
     {
-        return Ok(_toDoList.GetTask());
+        return Ok(_toDoList.AllTask());
     }
     
-    [HttpPost]
+    [HttpPost("SetTask")]
     public IActionResult SetTasks([FromBody]ToDoTask toDoTask)
     {
-        _toDoList.SetTask(toDoTask);
+        _toDoList.AddTask(toDoTask);
         return Ok();
     }
+
+    [HttpPost("DelTask")]
+    public IActionResult DelTasks()
+    {
+        _toDoList.DelTask();
+        return Ok();
+    }
+
+    [HttpPost("SelectTask")]
+    public IActionResult SelectTasks(int index)
+    {
+        _toDoList.SelectTask(index);
+        return Ok();
+    }
+
+    // [HttpPost("MasDelete")]
+    // public IActionResult MasDelTasks()
+    // {
+    //     _toDoList.MasDelTask();
+    //     return Ok();
+    // }
 }

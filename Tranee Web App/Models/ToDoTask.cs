@@ -2,12 +2,13 @@ namespace Tranee_Web_App.Models;
 
 public class ToDoTask
 {
-    public int Id { get; set; }
+    internal int Id { get; set; }
     public string TaskDescription { get; set; }
-
-    public ToDoTask(int id, string taskDescription)
+    internal bool Selected { get; set; }
+    
+    public ToDoTask(string taskDescription)
     {
-        Id = id;
         TaskDescription = taskDescription;
+        Selected = false;
     }
 }

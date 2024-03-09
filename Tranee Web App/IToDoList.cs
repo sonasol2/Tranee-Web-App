@@ -4,6 +4,11 @@ namespace Tranee_Web_App;
 
 public interface IToDoList
 {
-    IEnumerable<string> GetTask();
-    void SetTask(ToDoTask toDoTask);
+    IEnumerable<string> AllTask();
+    void AddTask(ToDoTask toDoTask);
+    void DelTask();
+    void SelectTask(int index);
+    void UpdateId();
+  
+
 }
