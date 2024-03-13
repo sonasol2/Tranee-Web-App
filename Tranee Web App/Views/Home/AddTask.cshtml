@@ -1,0 +1,28 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Tranee_Web_App.Models.ToDoTask
+
+
+@* @{ *@
+@*     Layout = null; *@
+@* } *@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<div>
+      <form asp-action="AddTasks" asp-controller="home">
+              <p>
+                  <label asp-for="TaskDescription">New task description here</label><br />
+                  <input type="text" asp-for="TaskDescription" />
+              </p>
+              <p>
+                  <input type="submit" value="Отправить" />
+              </p>
+          </form>
+</div>
+</body>
+</html>

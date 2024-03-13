@@ -1,51 +1,65 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Tranee_Web_App.Models
-    ;
-using Task = System.Threading.Tasks.Task;
+using Tranee_Web_App.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tranee_Web_App;
 
 [Route("[controller]")]
 public class HomeController : Controller
 {
-    readonly IToDoList _toDoList;
-
-    public HomeController(IToDoList toDoLi)
+    ApplicationContext db;
+    public HomeController(ApplicationContext context)
     {
-        _toDoList = toDoLi;
-    }
-    [HttpGet]
-    public IActionResult GetTasks()
-    {
-        return Ok(_toDoList.AllTask());
+        db = context;
     }
     
-    [HttpPost("SetTask")]
-    public IActionResult SetTasks([FromBody]ToDoTask toDoTask)
+    [HttpGet]
+
+    public async Task<IActionResult> Index()
     {
-        _toDoList.AddTask(toDoTask);
-        return Ok();
+        
+        return View(db.ToDoTasks.ToList());
+        return Ok( db.ToDoTasks.ToList());
+    }
+
+    [HttpGet("AddTask")]    
+    public IActionResult AddTask()
+    {
+        return View();
+    }
+    
+    [HttpPost("AddTask")]
+    public  IActionResult AddTasks(ToDoTask toDoTask)
+    {
+        // db.Users.Add(user);
+        db.ToDoTasks.Add(toDoTask);
+        db.SaveChanges();
+        return RedirectToAction("Index");
     }
 
     [HttpPost("DelTask")]
-    public IActionResult DelTasks()
+    public IActionResult DelTasks(int id)
     {
-        _toDoList.DelTask();
+        if (id != null)
+        {
+            ToDoTask toDoTask = db.ToDoTasks.FirstOrDefault(p => p.Id == id);
+            if (toDoTask != null)
+            {
+                db.ToDoTasks.Remove(toDoTask);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+        }
         return Ok();
     }
 
     [HttpPost("SelectTask")]
-    public IActionResult SelectTasks(int index)
+    public IActionResult SelectTasks(int id)
     {
-        _toDoList.SelectTask(index);
-        return Ok();
+        var a = db.ToDoTasks.Find(id);
+        a.Selected =! a.Selected;
+        return RedirectToAction("Index");
     }
-
-    // [HttpPost("MasDelete")]
-    // public IActionResult MasDelTasks()
-    // {
-    //     _toDoList.MasDelTask();
-    //     return Ok();
-    // }
+    
 }

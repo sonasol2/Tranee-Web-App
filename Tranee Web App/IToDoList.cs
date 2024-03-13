@@ -6,9 +6,9 @@ public interface IToDoList
 {
     IEnumerable<string> AllTask();
     void AddTask(ToDoTask toDoTask);
-    void DelTask();
-    void SelectTask(int index);
-    void UpdateId();
+    void DelTask(int id);
+    // void SelectTask(int index);
+    // void UpdateId();
   
 
 }
