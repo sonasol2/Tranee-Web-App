@@ -18,9 +18,10 @@ public class LoginController : Controller
     AuthOptions _options;
     
 
-    public LoginController(ApplicationContext context)
+    public LoginController(ApplicationContext context, HttpContext httpContext)
     {
         db = context;
+        
     }
 
     [HttpGet("/")]
@@ -49,10 +50,12 @@ public class LoginController : Controller
             access_token = encodedJwt,
             username = user.Name
         };
+        // Request.Headers.TryAdd(response.access_token, response.username); //Попытка отправить JWT токен в Headers
         return Json(response);
     }
 
     [HttpGet("AddUser")]
+    [Authorize]
     public IActionResult AddUser()
     {
         return Ok();

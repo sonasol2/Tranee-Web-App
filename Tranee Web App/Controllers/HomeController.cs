@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -6,19 +7,19 @@ using Microsoft.AspNetCore.Authorization;
 namespace Tranee_Web_App;
 
 [Route("[controller]")]
+[Authorize]
 public class HomeController : Controller
 {
     ApplicationContext db;
-    public HomeController(ApplicationContext context)
+    public HomeController(ApplicationContext context, HttpContext httpContext)
     {
         db = context;
+        // Response.Headers.TryGetValue("access_token", out var dateValues); Попытка принять токен. Пока ничего не понятно
     }
     
     [HttpGet]
-
     public async Task<IActionResult> Index()
     {
-        
         return View(db.ToDoTasks.ToList());
         return Ok( db.ToDoTasks.ToList());
     }

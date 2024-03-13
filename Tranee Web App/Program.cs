@@ -20,7 +20,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         
         builder.Services.AddAuthorization();
-        builder.Services.AddAuthentication("Baerer")
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
