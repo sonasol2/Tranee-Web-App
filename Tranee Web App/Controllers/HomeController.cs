@@ -1,3 +1,4 @@
+using System.Diagnostics.Eventing.Reader;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
@@ -11,9 +12,10 @@ namespace Tranee_Web_App;
 public class HomeController : Controller
 {
     ApplicationContext db;
-    public HomeController(ApplicationContext context, HttpContext httpContext)
+    public HomeController(ApplicationContext context)
     {
         db = context;
+        
         // Response.Headers.TryGetValue("access_token", out var dateValues); Попытка принять токен. Пока ничего не понятно
     }
     

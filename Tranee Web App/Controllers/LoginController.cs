@@ -1,37 +1,48 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Tranee_Web_App;
 
 
-// [Route("[controller]}")]
+[Route("[controller]")]
 public class LoginController : Controller
 {
     ApplicationContext db;
     AuthOptions _options;
     
 
-    public LoginController(ApplicationContext context, HttpContext httpContext)
+    public LoginController(ApplicationContext context)
     {
         db = context;
-        
+        // var key = Request.Headers.Authorization;
     }
 
-    [HttpGet("/")]
+    [HttpGet]
+    [Authorize]
     public IActionResult Index()
     {
-        return Ok();
+        return View();
+    }
+
+    [HttpGet("Login")]
+    // [Authorize]
+    public IActionResult Login()
+    {
+        return View();
     }
     
-    [HttpPost("/")]
-    public IActionResult Index(User loginData)
+    [HttpPost("Login")]
+    public IActionResult Login(User loginData)
     {
         User? user = db.Users.FirstOrDefault(p => p.Name == loginData.Name && p.Password == loginData.Password);
         if (user is null) return Unauthorized();
@@ -50,8 +61,9 @@ public class LoginController : Controller
             access_token = encodedJwt,
             username = user.Name
         };
-        // Request.Headers.TryAdd(response.access_token, response.username); //Попытка отправить JWT токен в Headers
-        return Json(response);
+        // Request.Headers.Add(response.access_token, response.username);
+        // return Ok(Response.Headers.Authorization = response.access_token); //Попытка отправить JWT токен в Headers
+        return Ok(Json(response));
     }
 
     [HttpGet("AddUser")]
