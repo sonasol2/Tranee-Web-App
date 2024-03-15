@@ -34,6 +34,14 @@ public class Program
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true,
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["CoookieName"];
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
         
         builder.Services.AddControllersWithViews();
@@ -41,8 +49,13 @@ public class Program
         builder.Services.AddSwaggerGen();
         
         var app = builder.Build();
+
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+        
         app.UseAuthentication();
         app.UseAuthorization();
+        
         app.UseSwaggerUI();
         app.UseSwagger();
         

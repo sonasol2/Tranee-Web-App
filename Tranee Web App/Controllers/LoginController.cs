@@ -28,7 +28,7 @@ public class LoginController : Controller
     }
 
     [HttpGet]
-    [Authorize]
+    // [Authorize]
     public IActionResult Index()
     {
         return View();
@@ -42,7 +42,7 @@ public class LoginController : Controller
     }
     
     [HttpPost("Login")]
-    public IActionResult Login(User loginData)
+    public IActionResult Login([FromBody]User loginData)
     {
         User? user = db.Users.FirstOrDefault(p => p.Name == loginData.Name && p.Password == loginData.Password);
         if (user is null) return Unauthorized();
@@ -55,15 +55,17 @@ public class LoginController : Controller
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
                 SecurityAlgorithms.HmacSha256));
         var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-    
+        
         var response = new
         {
             access_token = encodedJwt,
             username = user.Name
         };
-        // Request.Headers.Add(response.access_token, response.username);
-        // return Ok(Response.Headers.Authorization = response.access_token); //Попытка отправить JWT токен в Headers
-        return Ok(Json(response));
+
+        // Response.Cookies.Append("X-Access-Token", response.access_token, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
+        // Response.Cookies.Append("X-Username", response.username, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
+
+        return Json(response);
     }
 
     [HttpGet("AddUser")]
