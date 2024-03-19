@@ -26,27 +26,28 @@ document.getElementById("submitLogin").addEventListener("click", async e => {
         console.log("Status: ", response.status);
 });
 
-// // кнопка для обращения по пути "/data" для получения данных
-// document.getElementById("getData").addEventListener("click", async e => {
-//     e.preventDefault();
-//     // получаем токен из sessionStorage
-//     const token = sessionStorage.getItem(tokenKey);
-//     // отправляем запрос к "/data
-//     const response = await fetch("/Home", {
-//         method: "GET",
-//         headers: {
-//             "Accept": "application/json",
-//             "Authorization": "Bearer " + token  // передача токена в заголовке
-//         }
-//     });
-//
-//     if (response.ok === true) {
-//         const data = await response.json();
-//         alert(data.message);
-//     }
-//     else
-//         console.log("Status: ", response.status);
-// });
+// кнопка для обращения по пути "/data" для получения данных
+document.getElementById("getData").addEventListener("click", async e => {
+    e.preventDefault();
+    // получаем токен из sessionStorage
+    const token = sessionStorage.getItem(tokenKey);
+    // отправляем запрос к "/data
+    const response = await fetch("/Home", {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token  // передача токена в заголовке
+        }
+    });
+
+    if (response.ok === true) {
+        window.open(responce.json());
+        // const data = await response.json();
+        // window.open("/Home" + data, "_self")
+    }
+    else
+        console.log("Status: ", response.status);
+});
 
 // условный выход - просто удаляем токен и меняем видимость блоков
 document.getElementById("logOut").addEventListener("click", e => {

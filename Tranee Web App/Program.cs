@@ -34,14 +34,14 @@ public class Program
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true,
                     };
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            context.Token = context.Request.Cookies["CoookieName"];
-                            return Task.CompletedTask;
-                        }
-                    };
+                    // options.Events = new JwtBearerEvents
+                    // {
+                    //     OnMessageReceived = context =>
+                    //     {
+                    //         context.Token = context.Request.Cookies["CoookieName"];
+                    //         return Task.CompletedTask;
+                    //     }
+                    // };
                 });
         
         builder.Services.AddControllersWithViews();
@@ -60,7 +60,6 @@ public class Program
         app.UseSwagger();
         
         app.MapControllers();
-     
         
         app.Run();
     }

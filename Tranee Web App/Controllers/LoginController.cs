@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Tranee_Web_App;
 
 
-[Route("[controller]")]
+[Route("/api/[controller]")]
 public class LoginController : Controller
 {
     ApplicationContext db;

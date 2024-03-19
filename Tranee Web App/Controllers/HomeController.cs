@@ -1,5 +1,6 @@
 using System.Diagnostics.Eventing.Reader;
 using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -15,11 +16,10 @@ public class HomeController : Controller
     public HomeController(ApplicationContext context)
     {
         db = context;
-        
-        // Response.Headers.TryGetValue("access_token", out var dateValues); Попытка принять токен. Пока ничего не понятно
     }
     
     [HttpGet]
+    
     public async Task<IActionResult> Index()
     {
         return View(db.ToDoTasks.ToList());
