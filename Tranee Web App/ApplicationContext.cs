@@ -22,6 +22,8 @@ public class ApplicationContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasData(new User{Id = 1, Name = "Admin", Password = "123"});
+        modelBuilder.Entity<ToDoTask>().HasData(new ToDoTask{Id = 1, TaskDescription = "First test task", Selected = false});
+
     }
 
 }

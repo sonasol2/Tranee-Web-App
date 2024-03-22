@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Tranee_Web_App;
 
-[Route("[controller]")]
-[Authorize]
+[Route("/api/[controller]")]
+// [Authorize]
 public class HomeController : Controller
 {
     ApplicationContext db;
@@ -20,25 +20,27 @@ public class HomeController : Controller
     
     [HttpGet]
     
-    public async Task<IActionResult> Index()
+    public JsonResult Index()
     {
-        return View(db.ToDoTasks.ToList());
-        return Ok( db.ToDoTasks.ToList());
+        if (db.ToDoTasks == null) return Json("Empty List");
+        // return View(db.ToDoTasks.ToList());
+        return Json(db.ToDoTasks);
     }
 
-    [HttpGet("AddTask")]    
-    public IActionResult AddTask()
-    {
-        return View();
-    }
+    // [HttpGet("AddTask")]    
+    // public IActionResult AddTask()
+    // {
+    //     return View();
+    // }
     
     [HttpPost("AddTask")]
-    public  IActionResult AddTasks(ToDoTask toDoTask)
+    public JsonResult AddTasks([FromBody]ToDoTask toDoTask)
     {
         // db.Users.Add(user);
         db.ToDoTasks.Add(toDoTask);
         db.SaveChanges();
-        return RedirectToAction("Index");
+        // return RedirectToAction("Index");
+        return Json(Ok());
     }
 
     [HttpPost("DelTask")]
