@@ -23,6 +23,8 @@ public class ApplicationContext : DbContext
     {
         modelBuilder.Entity<User>().HasData(new User{Id = 1, Name = "Admin", Password = "123"});
         modelBuilder.Entity<ToDoTask>().HasData(new ToDoTask{Id = 1, TaskDescription = "First test task", Selected = false});
+        modelBuilder.Entity<ToDoTask>().HasData(new ToDoTask{Id = 2, TaskDescription = "Second test task", Selected = true});
+
 
     }
 

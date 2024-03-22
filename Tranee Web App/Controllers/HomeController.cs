@@ -1,10 +1,13 @@
 using System.Diagnostics.Eventing.Reader;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices.JavaScript;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 namespace Tranee_Web_App;
 
@@ -19,44 +22,33 @@ public class HomeController : Controller
     }
     
     [HttpGet]
-    
     public JsonResult Index()
     {
         if (db.ToDoTasks == null) return Json("Empty List");
-        // return View(db.ToDoTasks.ToList());
         return Json(db.ToDoTasks);
     }
-
-    // [HttpGet("AddTask")]    
-    // public IActionResult AddTask()
-    // {
-    //     return View();
-    // }
     
     [HttpPost("AddTask")]
     public JsonResult AddTasks([FromBody]ToDoTask toDoTask)
     {
-        // db.Users.Add(user);
         db.ToDoTasks.Add(toDoTask);
         db.SaveChanges();
-        // return RedirectToAction("Index");
         return Json(Ok());
     }
 
     [HttpPost("DelTask")]
-    public IActionResult DelTasks(int id)
+    public JsonResult DelTasks([FromBody]int id)
     {
-        if (id != null)
-        {
+        return Json(id);
             ToDoTask toDoTask = db.ToDoTasks.FirstOrDefault(p => p.Id == id);
             if (toDoTask != null)
             {
                 db.ToDoTasks.Remove(toDoTask);
                 db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-        }
-        return Ok();
+                return Json(Ok());
+            } 
+            return Json(StatusCode(401));
+        
     }
 
     [HttpPost("SelectTask")]
