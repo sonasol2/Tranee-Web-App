@@ -22,41 +22,46 @@ public class HomeController : Controller
     }
     
     [HttpGet]
-    public JsonResult Index()
+    public IActionResult Index()
     {
-        if (db.ToDoTasks == null) return Json("Empty List");
-        return Json(db.ToDoTasks);
+        // if (db.ToDoTasks == null) return Json("Empty List");
+        return Ok(db);
     }
     
-    [HttpPost("AddTask")]
-    public JsonResult AddTasks([FromBody]ToDoTask toDoTask)
+    [HttpPost("add-task")]
+    public IActionResult AddTasks([FromBody]ToDoTask toDoTask)
     {
         db.ToDoTasks.Add(toDoTask);
         db.SaveChanges();
-        return Json(Ok());
+        return Ok();
     }
 
-    [HttpPost("DelTask")]
-    public JsonResult DelTasks([FromBody]int id)
+    [HttpDelete("del-task")]
+    public IActionResult DelTasks([FromBody]int id)
     {
-        return Json(id);
             ToDoTask toDoTask = db.ToDoTasks.FirstOrDefault(p => p.Id == id);
             if (toDoTask != null)
             {
                 db.ToDoTasks.Remove(toDoTask);
                 db.SaveChanges();
-                return Json(Ok());
+                return Ok();
             } 
-            return Json(StatusCode(401));
-        
+            return BadRequest();
+    }
+    
+    [HttpPut("edit-task")]
+    public IActionResult EditTasks([FromBody]int id)
+    {
+        return Ok();
     }
 
-    [HttpPost("SelectTask")]
-    public IActionResult SelectTasks(int id)
+    [HttpPut("select-task")]
+    public IActionResult SelectTasks([FromBody]int id)
     {
         var a = db.ToDoTasks.Find(id);
         a.Selected =! a.Selected;
-        return RedirectToAction("Index");
+        db.SaveChanges();
+        return Ok();
     }
     
 }

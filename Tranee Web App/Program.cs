@@ -17,9 +17,9 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        
         var builder = WebApplication.CreateBuilder(args);
-        
+        string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+        builder.Services.AddDbContext<ApplicationContext>(option => option.UseSqlite(connection));
         builder.Services.AddAuthorization();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -34,18 +34,9 @@ public class Program
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true,
                     };
-                    // options.Events = new JwtBearerEvents
-                    // {
-                    //     OnMessageReceived = context =>
-                    //     {
-                    //         context.Token = context.Request.Cookies["CoookieName"];
-                    //         return Task.CompletedTask;
-                    //     }
-                    // };
                 });
-        
-        builder.Services.AddControllersWithViews();
-        builder.Services.AddSingleton<ApplicationContext>();
+        builder.Services.AddControllers();
+        // builder.Services.AddSingleton<ApplicationContext>();
         builder.Services.AddSwaggerGen();
         
         var app = builder.Build();

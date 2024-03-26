@@ -34,14 +34,14 @@ public class LoginController : Controller
         return View();
     }
 
-    [HttpGet("Login")]
+    [HttpGet("login")]
     // [Authorize]
     public IActionResult Login()
     {
         return View();
     }
     
-    [HttpPost("Login")]
+    [HttpPost("login")]
     public IActionResult Login([FromBody]User loginData)
     {
         User? user = db.Users.FirstOrDefault(p => p.Name == loginData.Name && p.Password == loginData.Password);
@@ -65,7 +65,7 @@ public class LoginController : Controller
         // Response.Cookies.Append("X-Access-Token", response.access_token, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
         // Response.Cookies.Append("X-Username", response.username, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
 
-        return Json(response);
+        return Ok(response);
     }
 
     [HttpGet("AddUser")]

@@ -5,8 +5,10 @@ public class ToDoTask
     public int Id { get; set; }
     public string TaskDescription { get; set; }
     public bool Selected { get; internal set; }
-
-    // public List<User> Users { get; set; } = new();
+    
+    public int UserId { get; set; }
+    public User? User { get; set; }
+    
     public ToDoTask(string taskDescription)
     {
         TaskDescription = taskDescription;
