@@ -26,23 +26,31 @@ public sealed class ApplicationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
-        // ToDoTask task1 = new ToDoTask { Id = 1, TaskDescription = "Third task" };
-        //
-        // User user = new User {Id = 1, Name = "Sergey", Password = "000"};
-        // User user1 = new User {Name = "Sergey", Password = "000", ToDoTask = task1};
-
+        User user1 = new User() { Id = 2, Name = "Sergey", Password = "123" };
+        modelBuilder.Entity<User>().HasData(user1);
         modelBuilder.Entity<User>().HasData(new User{Id = 1, Name = "Admin", Password = "123"});
+        // modelBuilder.Entity<ToDoTask>().HasData(new ToDoTask { Id = 1, TaskDescription = "Testing" });
         modelBuilder.Entity<ToDoTask>(o =>
             o.HasData(new ToDoTask()
             {
                 Id = 1,
                 TaskDescription = "Test",
-                UserId = 1
-            })
-    );
-        // modelBuilder.Entity<User>().HasData(user);
+                UserId = 1,
+            }));
         
-        // modelBuilder.Entity<ToDoTask>().HasData(new ToDoTask{Id = 2, TaskDescription = "Second test task", Selected = true});
+        modelBuilder.Entity<ToDoTask>()
+            .HasOne(u => u.User)
+            .WithMany(c => c.ToDoTasks)
+            .HasForeignKey(u => u.UserId);
+
+        // modelBuilder.Entity<User>(o =>
+        //     o.HasData(new User()
+        //     {
+        //         Id = 1,
+        //         Name = "Sergey",
+        //         Password = "123",
+        //         ToDoTaskId = 1
+        //     }));
+
     }
 }

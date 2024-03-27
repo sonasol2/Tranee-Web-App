@@ -24,7 +24,6 @@ public class LoginController : Controller
     public LoginController(ApplicationContext context)
     {
         db = context;
-        // var key = Request.Headers.Authorization;
     }
 
     [HttpGet]
@@ -59,7 +58,8 @@ public class LoginController : Controller
         var response = new
         {
             access_token = encodedJwt,
-            username = user.Name
+            username = user.Name,
+            userid = user.Id
         };
 
         // Response.Cookies.Append("X-Access-Token", response.access_token, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});

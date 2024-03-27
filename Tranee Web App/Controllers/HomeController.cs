@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Tranee_Web_App;
@@ -22,16 +23,20 @@ public class HomeController : Controller
     }
     
     [HttpGet]
-    public IActionResult Index()
+    public IActionResult Index([FromHeader]string userName)
     {
-        // if (db.ToDoTasks == null) return Json("Empty List");
-        return Ok(db);
+        var t = db.ToDoTasks.Where(x => x.User.Name == userName).ToList();
+        return Ok(t);
     }
     
     [HttpPost("add-task")]
-    public IActionResult AddTasks([FromBody]ToDoTask toDoTask)
+    public IActionResult AddTasks([FromBody]DataTransferModel value)
     {
-        db.ToDoTasks.Add(toDoTask);
+        // var user = db.Users.FirstOrDefault(u => u.Name == value.userName);
+        // var toDoTask = db.ToDoTasks.FirstOrDefault(t => t.User.Id == value.userId);
+        db.ToDoTasks.Add(new ToDoTask(){TaskDescription = value.taskDescription, UserId = value.userId});
+        
+        // db.ToDoTasks.Add(new ToDoTask(){TaskDescription = value.taskDescription, UserId = value.userId});
         db.SaveChanges();
         return Ok();
     }
