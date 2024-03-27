@@ -35,22 +35,19 @@ public sealed class ApplicationContext : DbContext
             {
                 Id = 1,
                 TaskDescription = "Test",
-                UserId = 1,
+                UserId = 1
+            }));
+        modelBuilder.Entity<ToDoTask>(o =>
+            o.HasData(new ToDoTask()
+            {
+                Id = 2,
+                TaskDescription = "Test2",
+                UserId = 2
             }));
         
         modelBuilder.Entity<ToDoTask>()
             .HasOne(u => u.User)
             .WithMany(c => c.ToDoTasks)
             .HasForeignKey(u => u.UserId);
-
-        // modelBuilder.Entity<User>(o =>
-        //     o.HasData(new User()
-        //     {
-        //         Id = 1,
-        //         Name = "Sergey",
-        //         Password = "123",
-        //         ToDoTaskId = 1
-        //     }));
-
     }
 }

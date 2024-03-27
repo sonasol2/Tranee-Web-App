@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Tranee_Web_App.Models;
 
 public class User

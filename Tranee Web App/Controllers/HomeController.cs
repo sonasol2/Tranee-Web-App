@@ -32,9 +32,14 @@ public class HomeController : Controller
     [HttpPost("add-task")]
     public IActionResult AddTasks([FromBody]DataTransferModel value)
     {
+        ToDoTask? toDoTask = new ToDoTask();
+        
+        toDoTask.TaskDescription = value.taskDescription;
+        toDoTask.UserId = value.userId;
+        toDoTask.Id = 3;
         // var user = db.Users.FirstOrDefault(u => u.Name == value.userName);
         // var toDoTask = db.ToDoTasks.FirstOrDefault(t => t.User.Id == value.userId);
-        db.ToDoTasks.Add(new ToDoTask(){TaskDescription = value.taskDescription, UserId = value.userId});
+        // db.ToDoTasks.Add(new ToDoTask(){TaskDescription = value.taskDescription, UserId = value.userId});
         
         // db.ToDoTasks.Add(new ToDoTask(){TaskDescription = value.taskDescription, UserId = value.userId});
         db.SaveChanges();
