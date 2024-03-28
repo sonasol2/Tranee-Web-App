@@ -45,12 +45,12 @@ public class LoginController : Controller
     {
         User? user = db.Users.FirstOrDefault(p => p.Name == loginData.Name && p.Password == loginData.Password);
         if (user is null) return Unauthorized();
-        var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Name) };
+        var claims = new List<Claim> { new Claim("userName", user.Name), new Claim("userId", user.Id.ToString()) };
         var jwt = new JwtSecurityToken(
             issuer: AuthOptions.ISSUER,
             audience: AuthOptions.AUDIENCE,
             claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(100)),
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
                 SecurityAlgorithms.HmacSha256));
         var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
@@ -61,9 +61,6 @@ public class LoginController : Controller
             username = user.Name,
             userid = user.Id
         };
-
-        // Response.Cookies.Append("X-Access-Token", response.access_token, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
-        // Response.Cookies.Append("X-Username", response.username, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
 
         return Ok(response);
     }

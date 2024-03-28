@@ -35,8 +35,8 @@ public class Program
                         ValidateIssuerSigningKey = true,
                     };
                 });
+        builder.Services.AddTransient<IToDoList, ToDoList>();
         builder.Services.AddControllers();
-        // builder.Services.AddSingleton<ApplicationContext>();
         builder.Services.AddSwaggerGen();
         
         var app = builder.Build();

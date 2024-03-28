@@ -13,36 +13,32 @@ using Newtonsoft.Json;
 namespace Tranee_Web_App;
 
 [Route("/api/[controller]")]
-// [Authorize]
+[Authorize]
 public class HomeController : Controller
 {
-    ApplicationContext db;
+    private ApplicationContext db;
+    private ToDoList _toDoList;
     public HomeController(ApplicationContext context)
     {
         db = context;
+        _toDoList = new ToDoList(context);
     }
     
     [HttpGet]
-    public IActionResult Index([FromHeader]string userName)
+    public IActionResult Index()
     {
-        var t = db.ToDoTasks.Where(x => x.User.Name == userName).ToList();
-        return Ok(t);
+        var userName = HttpContext.User.FindFirst("userName")?.Value;
+        // var t = db.ToDoTasks.Where(x => x.User.Name == userName).ToList();
+        return Ok(_toDoList.AllTask(userName));
     }
     
-    [HttpPost("add-task")]
-    public IActionResult AddTasks([FromBody]DataTransferModel value)
+    [HttpPut("add-task")]
+    public IActionResult AddTasks([FromBody]ToDoTask toDoTask)
     {
-        ToDoTask? toDoTask = new ToDoTask();
-        
-        toDoTask.TaskDescription = value.taskDescription;
-        toDoTask.UserId = value.userId;
-        toDoTask.Id = 3;
-        // var user = db.Users.FirstOrDefault(u => u.Name == value.userName);
-        // var toDoTask = db.ToDoTasks.FirstOrDefault(t => t.User.Id == value.userId);
-        // db.ToDoTasks.Add(new ToDoTask(){TaskDescription = value.taskDescription, UserId = value.userId});
-        
-        // db.ToDoTasks.Add(new ToDoTask(){TaskDescription = value.taskDescription, UserId = value.userId});
-        db.SaveChanges();
+        var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
+        _toDoList.AddTask(toDoTask, userId);
+        // db.ToDoTasks.Add(new ToDoTask(){TaskDescription = toDoTask.TaskDescription, UserId = userId});
+        // db.SaveChanges();
         return Ok();
     }
 
@@ -68,10 +64,14 @@ public class HomeController : Controller
     [HttpPut("select-task")]
     public IActionResult SelectTasks([FromBody]int id)
     {
-        var a = db.ToDoTasks.Find(id);
-        a.Selected =! a.Selected;
-        db.SaveChanges();
-        return Ok();
+        ToDoTask toDoTask = db.ToDoTasks.FirstOrDefault(p => p.Id == id);
+        if (toDoTask != null)
+        {
+            toDoTask.Selected =! toDoTask.Selected;
+            db.SaveChanges();
+            return Ok();
+        } 
+        return BadRequest();
     }
     
 }
