@@ -23,31 +23,8 @@ public sealed class ApplicationContext : DbContext
         var connection = new SqliteConnection(connectionString);
         optionsBuilder.UseSqlite(connection);
     }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        // User user1 = new User() { Id = 2, Name = "Sergey", Password = "123" };
-        // modelBuilder.Entity<User>().HasData(user1);
-        // modelBuilder.Entity<User>().HasData(new User{Id = 1, Name = "Admin", Password = "123"});
-        // // modelBuilder.Entity<ToDoTask>().HasData(new ToDoTask { Id = 1, TaskDescription = "Testing" });
-        // modelBuilder.Entity<ToDoTask>(o =>
-        //     o.HasData(new ToDoTask()
-        //     {
-        //         Id = 1,
-        //         TaskDescription = "Test",
-        //         UserId = 1
-        //     }));
-        // modelBuilder.Entity<ToDoTask>(o =>
-        //     o.HasData(new ToDoTask()
-        //     {
-        //         Id = 2,
-        //         TaskDescription = "Test2",
-        //         UserId = 2
-        //     }));
-        //
-        // modelBuilder.Entity<ToDoTask>()
-        //     .HasOne(u => u.User)
-        //     .WithMany(c => c.ToDoTasks)
-        //     .HasForeignKey(u => u.UserId);
-    }
+    // protected override void OnModelCreating(ModelBuilder modelBuilder)
+    // {
+    //     
+    // }
 }

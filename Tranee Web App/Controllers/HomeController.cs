@@ -1,14 +1,8 @@
-using System.Diagnostics.Eventing.Reader;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices.JavaScript;
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
+
 
 namespace Tranee_Web_App;
 
@@ -28,50 +22,71 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         var userName = HttpContext.User.FindFirst("userName")?.Value;
-        // var t = db.ToDoTasks.Where(x => x.User.Name == userName).ToList();
         return Ok(_toDoList.AllTask(userName));
     }
     
     [HttpPut("add-task")]
     public IActionResult AddTasks([FromBody]ToDoTask toDoTask)
     {
-        var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
-        _toDoList.AddTask(toDoTask, userId);
-        // db.ToDoTasks.Add(new ToDoTask(){TaskDescription = toDoTask.TaskDescription, UserId = userId});
-        // db.SaveChanges();
-        return Ok();
+        if (ModelState.IsValid)
+        {
+            var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
+            if (!(userId != 0 & GetUserName() != null)) return BadRequest();
+            _toDoList.AddTask(toDoTask, userId);
+            return Ok(_toDoList.AllTask(GetUserName()));
+        }
+        return BadRequest();
     }
 
     [HttpDelete("del-task")]
-    public IActionResult DelTasks([FromBody]int id)
+    public IActionResult DelTasks([FromBody]int taskId)
     {
-            ToDoTask toDoTask = db.ToDoTasks.FirstOrDefault(p => p.Id == id);
-            if (toDoTask != null)
-            {
-                db.ToDoTasks.Remove(toDoTask);
-                db.SaveChanges();
-                return Ok();
-            } 
-            return BadRequest();
+        if (GetUserName() == null) return BadRequest();
+        if (_toDoList.DelTask(taskId))
+        {
+            return Ok(_toDoList.AllTask(GetUserName()));
+        }
+        return BadRequest();
+
     }
     
     [HttpPut("edit-task")]
-    public IActionResult EditTasks([FromBody]int id)
+    public IActionResult EditTasks([FromBody]string editDescription, int taskId)
     {
+        if (!ModelState.IsValid) return Ok();
+        if (GetUserId() != null & GetUserName() != null)
+        {
+            _toDoList.EditTask(editDescription, taskId);
+            return Ok(_toDoList.AllTask(GetUserName()));
+        }
+
         return Ok();
     }
 
-    [HttpPut("select-task")]
-    public IActionResult SelectTasks([FromBody]int id)
+    [HttpPost("select-task")]
+    public IActionResult SelectTasks([FromBody] int taskId)
     {
-        ToDoTask toDoTask = db.ToDoTasks.FirstOrDefault(p => p.Id == id);
-        if (toDoTask != null)
+        if (GetUserId() == null) return BadRequest();
+        _toDoList.SelectTask(taskId);
+        return Ok(_toDoList.AllTask(GetUserName()));
+
+    }
+
+    public string? GetUserName()
+    {
+        var userName = HttpContext.User.FindFirst("userName")?.Value;
+        return userName ?? "Empty";
+    }
+
+    public object? GetUserId()
+    {
+        var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
+        if (userId != 0)
         {
-            toDoTask.Selected =! toDoTask.Selected;
-            db.SaveChanges();
-            return Ok();
-        } 
-        return BadRequest();
+            return userId;
+        }
+
+        return null;
     }
     
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
@@ -9,8 +10,8 @@ public class ToDoList : IToDoList
     {
         db = context;
     }
-    public List<ToDoTask> AllTask(string userName)
-    { 
+    public List<ToDoTask> AllTask(string? userName)
+    {
         return db.ToDoTasks.Where(u => u.User.Name == userName).ToList();
     } 
 
@@ -20,22 +21,57 @@ public class ToDoList : IToDoList
         db.SaveChanges();
     }
     
-    // public void DelTask(int id)
-    // {
-    //     if (id != null)
-    //     {
-    //         ToDoTask toDoTask = db.ToDoTasks.FirstOrDefault(p => p.Id == id);
-    //         if (toDoTask != null)
-    //         {
-    //             db.ToDoTasks.Remove(toDoTask);
-    //             db.SaveChanges();
-    //             // UpdateId();
-    //             
-    //         }
-    //     }
-    //     // _toDoList.RemoveAll(x => x.Selected);
-    //     // UpdateId();
-    // }
+    public bool DelTask(int taskId)
+    {
+        var task = TaskSearcher(taskId);
+        if (task != null)
+        {
+            db.ToDoTasks.Remove(task);
+            db.SaveChanges();
+            return true;
+        }
+        return false;
+    }
+
+    public bool SelectTask(int taskId)
+    {
+        var task = TaskSearcher(taskId);
+        if (task != null)
+        {
+            task.Selected = !task.Selected;
+            db.SaveChanges();
+            return true;
+        }
+        return false;
+    }
+
+    public void EditTask(string editDescription, int taskId)
+    {
+        var task = TaskSearcher(taskId);
+        task.TaskDescription = editDescription;
+        db.SaveChanges();
+    }
+    
+    public ToDoTask TaskSearcher(int taskId)
+    {
+        var task = db.ToDoTasks.FirstOrDefault(t => t.Id == taskId);
+        if (task != null)
+        {
+            return task;
+        }
+        return null;
+    }
+    
+    public ToDoTask TaskSearcher(string userName)
+    {
+        var task = db.ToDoTasks.FirstOrDefault(t => t.User.Name == userName);
+        if (task != null)
+        {
+            return task;
+        }
+        return null;
+    }
+    
     
     // public void UpdateId()
     // {
@@ -48,15 +84,6 @@ public class ToDoList : IToDoList
     //     db.SaveChanges();
     // }
     
-    // public void SelectTask(int index)
-    // {
-            // _toDoList[index].Selected =!_toDoList[index].Selected;
-            //     if (_toDoList[index].Selected == false)
-            //     {
-            //         _toDoList[index].Selected = true;
-            //     }
-            //     else _toDoList[index].Selected = false;
-            //     
-            // }
+    
 
 }
