@@ -1,3 +1,4 @@
+using System.Collections;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Tranee_Web_App.Models;
 
@@ -32,7 +33,14 @@ public class ToDoList : IToDoList
         }
         return false;
     }
-
+    
+    public void EditTask(string editDescription, int taskId)
+    {
+        var task = TaskSearcher(taskId);
+        task.TaskDescription = editDescription;
+        db.SaveChanges();
+    }
+    
     public bool SelectTask(int taskId)
     {
         var task = TaskSearcher(taskId);
@@ -44,15 +52,8 @@ public class ToDoList : IToDoList
         }
         return false;
     }
-
-    public void EditTask(string editDescription, int taskId)
-    {
-        var task = TaskSearcher(taskId);
-        task.TaskDescription = editDescription;
-        db.SaveChanges();
-    }
-    
-    public ToDoTask TaskSearcher(int taskId)
+        
+    private ToDoTask TaskSearcher(int taskId)
     {
         var task = db.ToDoTasks.FirstOrDefault(t => t.Id == taskId);
         if (task != null)
@@ -62,7 +63,7 @@ public class ToDoList : IToDoList
         return null;
     }
     
-    public ToDoTask TaskSearcher(string userName)
+    private ToDoTask TaskSearcher(string userName)
     {
         var task = db.ToDoTasks.FirstOrDefault(t => t.User.Name == userName);
         if (task != null)
@@ -71,19 +72,4 @@ public class ToDoList : IToDoList
         }
         return null;
     }
-    
-    
-    // public void UpdateId()
-    // {
-    //     
-    //     for (int i = 0; i < db.ToDoTasks.Count(); i++)
-    //     {
-    //         // _toDoList[i].Id = i+1;
-    //         db.ToDoTasks.Find(i).Id = i + 1;
-    //     }
-    //     db.SaveChanges();
-    // }
-    
-    
-
 }

@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-
 
 namespace Tranee_Web_App;
 
@@ -12,16 +10,21 @@ public class HomeController : Controller
 {
     private ApplicationContext db;
     private ToDoList _toDoList;
+    // private IToDoList test; какой способ будет правильный и вообще можно ли так делать.
+
     public HomeController(ApplicationContext context)
     {
         db = context;
         _toDoList = new ToDoList(context);
+        // test = new ToDoList(context);
     }
     
     [HttpGet]
     public IActionResult Index()
     {
+        
         var userName = HttpContext.User.FindFirst("userName")?.Value;
+        // return Ok(test.AllTask(userName));
         return Ok(_toDoList.AllTask(userName));
     }
     
