@@ -22,66 +22,69 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        
-        var userName = HttpContext.User.FindFirst("userName")?.Value;
+        var userName = GetUserName();
+        if (userName == null) return BadRequest("Name does not exist");
+        // var userName = HttpContext.User.FindFirst("userName")?.Value;
         // return Ok(test.AllTask(userName));
         return Ok(_toDoList.AllTask(userName));
     }
     
     [HttpPut("add-task")]
-    public IActionResult AddTasks([FromBody]ToDoTask toDoTask)
+    public async Task<IActionResult> AddTasks([FromBody]ToDoTask toDoTask)
     {
-        if (ModelState.IsValid)
-        {
-            var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
-            if (!(userId != 0 & GetUserName() != null)) return BadRequest();
-            _toDoList.AddTask(toDoTask, userId);
-            return Ok(_toDoList.AllTask(GetUserName()));
-        }
-        return BadRequest();
+        if (!ModelState.IsValid) return BadRequest(ModelState.Values.ToString());
+        var userId = GetUserId();
+        var userName = GetUserName();
+        // var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
+        if (!(userId != null & userName != null)) return BadRequest("Id or Name does not exist");
+        await _toDoList.AddTask(toDoTask, userId);
+        return Ok(_toDoList.AllTask(userName));
     }
 
     [HttpDelete("del-task")]
     public IActionResult DelTasks([FromBody]int taskId)
     {
-        if (GetUserName() == null) return BadRequest();
-        if (_toDoList.DelTask(taskId))
-        {
-            return Ok(_toDoList.AllTask(GetUserName()));
-        }
-        return BadRequest();
+        var userName = GetUserName();
+        if (userName == null) return BadRequest("Name does not exist");
+        
+        if (_toDoList.DelTask(taskId).Result) return Ok(_toDoList.AllTask(userName));
+        
+        return BadRequest(ModelState.Values.ToString());
 
     }
     
     [HttpPut("edit-task")]
-    public IActionResult EditTasks([FromBody]string editDescription, int taskId)
+    public async Task<IActionResult> EditTasks([FromBody]string editDescription, int taskId)
     {
-        if (!ModelState.IsValid) return Ok();
-        if (GetUserId() != null & GetUserName() != null)
+        if (!ModelState.IsValid) return BadRequest(ModelState.Values.ToString());
+        var userName = GetUserName();
+        if (userName != null)
         {
-            _toDoList.EditTask(editDescription, taskId);
-            return Ok(_toDoList.AllTask(GetUserName()));
+            await _toDoList.EditTask(editDescription, taskId);
+            return Ok(_toDoList.AllTask(userName));
         }
 
-        return Ok();
+        return BadRequest("Name does not exist");
     }
 
     [HttpPost("select-task")]
-    public IActionResult SelectTasks([FromBody] int taskId)
+    public async Task<IActionResult> SelectTasks([FromBody] int taskId)
     {
-        if (GetUserId() == null) return BadRequest();
-        _toDoList.SelectTask(taskId);
-        return Ok(_toDoList.AllTask(GetUserName()));
+        var userId = GetUserId();
+        var userName = GetUserName();
+        if (userId == null & userName != null) return BadRequest("Id or Name does not exist");
+        await _toDoList.SelectTask(taskId);
+        return Ok(_toDoList.AllTask(userName));
 
     }
 
     public string? GetUserName()
     {
         var userName = HttpContext.User.FindFirst("userName")?.Value;
-        return userName ?? "Empty";
+        return userName ?? null;
     }
 
-    public object? GetUserId()
+    public int? GetUserId()
     {
         var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
         if (userId != 0)

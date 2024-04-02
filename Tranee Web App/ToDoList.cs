@@ -1,5 +1,6 @@
 using System.Collections;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
@@ -16,46 +17,56 @@ public class ToDoList : IToDoList
         return db.ToDoTasks.Where(u => u.User.Name == userName).ToList();
     } 
 
-    public void AddTask(ToDoTask task, int userId)
+    public async Task AddTask(ToDoTask task, int? userId)
     {
-        db.ToDoTasks.Add(new ToDoTask(){TaskDescription = task.TaskDescription, UserId = userId});
-        db.SaveChanges();
+        if (userId != null)
+        {
+            var id = userId.Value;
+            await db.ToDoTasks.AddAsync(new ToDoTask(){TaskDescription = task.TaskDescription, UserId = id});
+            await db.SaveChangesAsync();
+        }
     }
     
-    public bool DelTask(int taskId)
+    public async Task<bool> DelTask(int taskId)
     {
-        var task = TaskSearcher(taskId);
+        var task = TaskSearcher(taskId).Result;
         if (task != null)
         {
             db.ToDoTasks.Remove(task);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         return false;
     }
     
-    public void EditTask(string editDescription, int taskId)
+    public async Task<bool> EditTask(string editDescription, int taskId)
     {
-        var task = TaskSearcher(taskId);
-        task.TaskDescription = editDescription;
-        db.SaveChanges();
+        var task = TaskSearcher(taskId).Result;
+        if (task != null)
+        {
+            task.TaskDescription = editDescription;
+            db.ToDoTasks.Update(task);
+            await db.SaveChangesAsync();
+            return true;
+        }
+        return false;
     }
     
-    public bool SelectTask(int taskId)
+    public async Task<bool> SelectTask(int taskId)
     {
-        var task = TaskSearcher(taskId);
+        var task = TaskSearcher(taskId).Result;
         if (task != null)
         {
             task.Selected = !task.Selected;
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         return false;
     }
         
-    private ToDoTask TaskSearcher(int taskId)
+    private async Task<ToDoTask> TaskSearcher(int taskId)
     {
-        var task = db.ToDoTasks.FirstOrDefault(t => t.Id == taskId);
+        var task = await db.ToDoTasks.FirstOrDefaultAsync(t => t.Id == taskId);
         if (task != null)
         {
             return task;
@@ -63,9 +74,9 @@ public class ToDoList : IToDoList
         return null;
     }
     
-    private ToDoTask TaskSearcher(string userName)
+    private async Task<ToDoTask> TaskSearcher(string userName)
     {
-        var task = db.ToDoTasks.FirstOrDefault(t => t.User.Name == userName);
+        var task = await db.ToDoTasks.FirstOrDefaultAsync(t => t.User.Name == userName);
         if (task != null)
         {
             return task;
