@@ -8,6 +8,7 @@ namespace Tranee_Web_App;
 public class ToDoList : IToDoList
 {
     private ApplicationContext db;
+    public IToDoBinder Binder { get; set; }
     public ToDoList(ApplicationContext context)
     {
         db = context;
@@ -16,7 +17,7 @@ public class ToDoList : IToDoList
     {
         return db.ToDoTasks.Where(u => u.User.Name == userName).ToList();
     } 
-
+    
     public async Task AddTask(ToDoTask task, int? userId)
     {
         if (userId != null)

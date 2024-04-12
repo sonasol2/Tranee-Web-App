@@ -10,12 +10,15 @@ public class HomeController : Controller
 {
     private ApplicationContext db;
     private ToDoList _toDoList;
+    private ToDoListy _toDoListy;
+    
     // private IToDoList test; какой способ будет правильный и вообще можно ли так делать.
 
     public HomeController(ApplicationContext context)
     {
         db = context;
         _toDoList = new ToDoList(context);
+       
         // test = new ToDoList(context);
     }
     
@@ -32,13 +35,17 @@ public class HomeController : Controller
     [HttpPut("add-task")]
     public async Task<IActionResult> AddTasks([FromBody]ToDoTask toDoTask)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState.Values.ToString());
-        var userId = GetUserId();
-        var userName = GetUserName();
-        // var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
-        if (!(userId != null & userName != null)) return BadRequest("Id or Name does not exist");
-        await _toDoList.AddTask(toDoTask, userId);
-        return Ok(_toDoList.AllTask(userName));
+        
+
+        _toDoListy.Process(toDoTask);
+        // if (!ModelState.IsValid) return BadRequest(ModelState.Values);
+        // var userId = GetUserId();
+        // var userName = GetUserName();
+        // // var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
+        // if (!(userId != null & userName != null)) return BadRequest("Id or Name does not exist");
+        // await _toDoList.AddTask(toDoTask, userId);
+        // return Ok(_toDoList.AllTask(userName));
+        return Ok();
     }
 
     [HttpDelete("del-task")]
@@ -87,11 +94,7 @@ public class HomeController : Controller
     public int? GetUserId()
     {
         var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
-        if (userId != 0)
-        {
-            return userId;
-        }
-
+        if (userId != 0) return userId;
         return null;
     }
     
