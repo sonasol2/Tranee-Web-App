@@ -4,7 +4,7 @@ namespace Tranee_Web_App;
 
 public class UserGetter : IUserGetter
 {
-    private HttpContext _httpContext;
+    private readonly HttpContext _httpContext;
     
     public int GetUserById()
     {

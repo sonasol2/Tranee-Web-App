@@ -18,7 +18,7 @@ public class HomeController : Controller
     {
         db = context;
         _toDoList = new ToDoList(context);
-       
+        _toDoListy = new ToDoListy(new ToDoAdder(context), new ToDoBinder(), new ToDoRemover(), new ToDoTaskReader(), new UserGetter());
         // test = new ToDoList(context);
     }
     
@@ -35,8 +35,6 @@ public class HomeController : Controller
     [HttpPut("add-task")]
     public async Task<IActionResult> AddTasks([FromBody]ToDoTask toDoTask)
     {
-        
-
         _toDoListy.Process(toDoTask);
         // if (!ModelState.IsValid) return BadRequest(ModelState.Values);
         // var userId = GetUserId();

@@ -27,6 +27,12 @@ public class Program
                     };
                 });
         builder.Services.AddTransient<IToDoList, ToDoList>();
+        // builder.Services.AddTransient<IToDoListy, ToDoListy>();
+        // builder.Services.AddTransient<IToDoAdder, ToDoAdder>();
+        // builder.Services.AddTransient<IUserGetter, UserGetter>();
+        // builder.Services.AddTransient<IToDoTaskReader, ToDoTaskReader>();
+        // builder.Services.AddTransient<IToDoBinder, ToDoBinder>();
+        
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();
         

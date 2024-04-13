@@ -5,20 +5,16 @@ namespace Tranee_Web_App;
 public class ToDoAdder : IToDoAdder
 {
     private ApplicationContext db;
-    public IUserGetter UserGet { get;}
-    public IToDoTaskReader ToDoTaskReader { get; }
 
-    public ToDoAdder(ApplicationContext context, IUserGetter userGet, IToDoTaskReader toDoTaskReader)
+    public ToDoAdder(ApplicationContext context)
     {
         db = context;
-        UserGet = userGet;
-        ToDoTaskReader = toDoTaskReader;
     }
     
-    public async Task AddToDo(ToDoTask toDoTask)
+    public async Task AddToDo(string? taskDescription, int userId)
     {
         await db.ToDoTasks.AddAsync(new ToDoTask()
-            { TaskDescription = ToDoTaskReader.GetInputDescription(toDoTask), UserId = UserGet.GetUserById() });
+            { TaskDescription = taskDescription, UserId = userId });
         await db.SaveChangesAsync();
     }
 }

@@ -4,5 +4,5 @@ namespace Tranee_Web_App;
 
 public interface IToDoAdder
 {
-    Task AddToDo(ToDoTask toDoTask);
+    Task AddToDo(string? taskDescription, int userId);
 }
