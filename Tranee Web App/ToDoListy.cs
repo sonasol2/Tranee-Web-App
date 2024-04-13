@@ -2,7 +2,7 @@ using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
 
-public class ToDoListy : IToDoListy
+public class ToDoListy : IToDoListy<ToDoListy>
 {
     private IToDoAdder ToDoAdder { get; set; }
     private IToDoBinder ToDoBinder { get; set; }

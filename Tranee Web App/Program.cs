@@ -27,6 +27,7 @@ public class Program
                     };
                 });
         builder.Services.AddTransient<IToDoList, ToDoList>();
+        builder.Services.AddTransient<IToDoListy<ToDoListy>, ToDoListy>();
         // builder.Services.AddTransient<IToDoListy, ToDoListy>();
         // builder.Services.AddTransient<IToDoAdder, ToDoAdder>();
         // builder.Services.AddTransient<IUserGetter, UserGetter>();

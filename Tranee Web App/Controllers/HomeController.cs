@@ -14,11 +14,11 @@ public class HomeController : Controller
     
     // private IToDoList test; какой способ будет правильный и вообще можно ли так делать.
 
-    public HomeController(ApplicationContext context)
+    public HomeController(ApplicationContext context, ToDoListy toDoListy)
     {
         db = context;
         _toDoList = new ToDoList(context);
-        _toDoListy = new ToDoListy(new ToDoAdder(context), new ToDoBinder(), new ToDoRemover(), new ToDoTaskReader(), new UserGetter());
+        _toDoListy = toDoListy;
         // test = new ToDoList(context);
     }
     
