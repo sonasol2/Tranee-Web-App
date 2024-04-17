@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
 
@@ -27,12 +28,7 @@ public class Program
                     };
                 });
         builder.Services.AddTransient<IToDoList, ToDoList>();
-        builder.Services.AddTransient<IToDoListy<ToDoListy>, ToDoListy>();
-        // builder.Services.AddTransient<IToDoListy, ToDoListy>();
-        // builder.Services.AddTransient<IToDoAdder, ToDoAdder>();
-        // builder.Services.AddTransient<IUserGetter, UserGetter>();
-        // builder.Services.AddTransient<IToDoTaskReader, ToDoTaskReader>();
-        // builder.Services.AddTransient<IToDoBinder, ToDoBinder>();
+        builder.Services.AddTransient<IRepository<ToDoTask>, ToDoRepository>();
         
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();

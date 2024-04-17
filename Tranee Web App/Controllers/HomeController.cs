@@ -1,6 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using Microsoft.AspNetCore.Authorization;
+using Tranee_Web_App.DTO;
 
 namespace Tranee_Web_App;
 
@@ -8,52 +10,52 @@ namespace Tranee_Web_App;
 [Authorize]
 public class HomeController : Controller
 {
+    private IRepository<ToDoTask> _repository;
     private ApplicationContext db;
-    private ToDoList _toDoList;
-    private ToDoListy _toDoListy;
-    
-    // private IToDoList test; какой способ будет правильный и вообще можно ли так делать.
+    private IToDoList _toDoList;
 
-    public HomeController(ApplicationContext context, ToDoListy toDoListy)
+    public HomeController(ApplicationContext context, IToDoList toDoList, IRepository<ToDoTask> repository)
     {
         db = context;
-        _toDoList = new ToDoList(context);
-        _toDoListy = toDoListy;
-        // test = new ToDoList(context);
+        _toDoList = toDoList;
+        _repository = repository;
     }
     
     [HttpGet]
     public IActionResult Index()
     {
-        var userName = GetUserName();
-        if (userName == null) return BadRequest("Name does not exist");
-        // var userName = HttpContext.User.FindFirst("userName")?.Value;
-        // return Ok(test.AllTask(userName));
-        return Ok(_toDoList.AllTask(userName));
+        var userId = GetUserId();
+        if (userId == null) return BadRequest();
+        var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
+        var mapper = new Mapper(config);
+        var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoList.AllTaskById(userId.Value));
+        
+        // var userName = GetUserName();
+        // if (userName == null) return BadRequest("Name does not exist");
+        // return Ok(_toDoList.AllTask(userName));
+        return Ok(todoes);
     }
     
     [HttpPut("add-task")]
-    public async Task<IActionResult> AddTasks([FromBody]ToDoTask toDoTask)
+    public async Task<IActionResult> AddTasks([FromBody]ToDoTaskDTO toDoTask)
     {
-        _toDoListy.Process(toDoTask);
-        // if (!ModelState.IsValid) return BadRequest(ModelState.Values);
-        // var userId = GetUserId();
-        // var userName = GetUserName();
-        // // var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
-        // if (!(userId != null & userName != null)) return BadRequest("Id or Name does not exist");
-        // await _toDoList.AddTask(toDoTask, userId);
-        // return Ok(_toDoList.AllTask(userName));
-        return Ok();
+        if (!ModelState.IsValid) return BadRequest(ModelState.Values);
+        var userId = (int)GetUserId();
+        var userName = GetUserName();
+        if (!(userId != null & userName != null)) return BadRequest("Id or Name does not exist");
+        await _toDoList.AddTask(toDoTask, userId);
+        return Ok(_toDoList.AllTaskById(userId));
+        // return Ok();
     }
 
     [HttpDelete("del-task")]
     public IActionResult DelTasks([FromBody]int taskId)
     {
         var userName = GetUserName();
-        if (userName == null) return BadRequest("Name does not exist");
-        
-        if (_toDoList.DelTask(taskId).Result) return Ok(_toDoList.AllTask(userName));
-        
+        // if (userName == null) return BadRequest("Name does not exist");
+        var a = _toDoList.DelTask(taskId).Result;
+        if (a) return Ok(_toDoList.AllTaskByUserName(userName));
+        // if (_toDoList.DelTask(taskId).Result) return Ok(_toDoList.AllTaskByUserName(userName));
         return BadRequest(ModelState.Values.ToString());
 
     }
@@ -65,8 +67,8 @@ public class HomeController : Controller
         var userName = GetUserName();
         if (userName != null)
         {
-            await _toDoList.EditTask(editDescription, taskId);
-            return Ok(_toDoList.AllTask(userName));
+            await _toDoList.UpdateTask(editDescription, taskId);
+            return Ok(_toDoList.AllTaskByUserName(userName));
         }
 
         return BadRequest("Name does not exist");
@@ -79,7 +81,7 @@ public class HomeController : Controller
         var userName = GetUserName();
         if (userId == null & userName != null) return BadRequest("Id or Name does not exist");
         await _toDoList.SelectTask(taskId);
-        return Ok(_toDoList.AllTask(userName));
+        return Ok(_toDoList.AllTaskByUserName(userName));
 
     }
 

@@ -1,6 +1,8 @@
 using System.Collections;
+using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Tranee_Web_App.DTO;
 using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
@@ -8,41 +10,60 @@ namespace Tranee_Web_App;
 public class ToDoList : IToDoList
 {
     private ApplicationContext db;
-    public IToDoBinder Binder { get; set; }
-    public ToDoList(ApplicationContext context)
+    private IRepository<ToDoTask> _repository;
+    public ToDoList(ApplicationContext context, IRepository<ToDoTask> repository)
     {
         db = context;
+        _repository = repository;
     }
-    public List<ToDoTask> AllTask(string? userName)
+    public IEnumerable<ToDoTaskDTO> AllTaskByUserName(string? userName)
     {
-        return db.ToDoTasks.Where(u => u.User.Name == userName).ToList();
+        var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
+        var mapper = new Mapper(config);
+        var todoes = mapper.Map<List<ToDoTaskDTO>>(_repository.GetAllTaskByName(userName));
+        // return db.ToDoTasks.Where(u => u.User.Name == userName).ToList();
+        return todoes;
     } 
     
-    public async Task AddTask(ToDoTask task, int? userId)
+    public IEnumerable<ToDoTaskDTO> AllTaskById(int id)
     {
-        if (userId != null)
-        {
-            var id = userId.Value;
-            await db.ToDoTasks.AddAsync(new ToDoTask(){TaskDescription = task.TaskDescription, UserId = id});
-            await db.SaveChangesAsync();
-        }
+        var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
+        var mapper = new Mapper(config);
+        var todoes = mapper.Map<List<ToDoTaskDTO>>(_repository.GetAllTaskById(id));
+        // return db.ToDoTasks.Where(u => u.User.Id == id).ToList();
+        return todoes;
+    } 
+    public async Task AddTask(ToDoTaskDTO task, int userId)
+    {
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTaskDTO, ToDoTask>()
+                // .ForMember("", opt => opt.MapFrom(c => c.))
+                );
+            var mapper = new Mapper(config);
+            ToDoTask toDoTask = mapper.Map<ToDoTaskDTO, ToDoTask>(task);
+            // var id = userId.Value;
+            // await db.ToDoTasks.AddAsync(new ToDoTask(){TaskDescription = task.TaskDescription, UserId = id});
+            _repository.Create(toDoTask, userId);
+            _repository.Save();
+            // await db.SaveChangesAsync();
     }
     
     public async Task<bool> DelTask(int taskId)
     {
-        var task = TaskSearcher(taskId).Result;
-        if (task != null)
+        var task = await TaskSearcher(taskId);
+        if (taskId != null)
         {
-            db.ToDoTasks.Remove(task);
-            await db.SaveChangesAsync();
+            _repository.Delete(taskId);
+            _repository.Save();
+            // db.ToDoTasks.Remove(task);
+            // await db.SaveChangesAsync();
             return true;
         }
         return false;
     }
     
-    public async Task<bool> EditTask(string editDescription, int taskId)
+    public async Task<bool> UpdateTask(string editDescription, int taskId)
     {
-        var task = TaskSearcher(taskId).Result;
+        var task = await TaskSearcher(taskId);
         if (task != null)
         {
             task.TaskDescription = editDescription;
