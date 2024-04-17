@@ -61,14 +61,14 @@ public class ToDoList : IToDoList
         return false;
     }
     
-    public async Task<bool> UpdateTask(string editDescription, int taskId)
+    public async Task<bool> UpdateTask(ToDoTaskDTO toDoTaskDto)
     {
-        var task = await TaskSearcher(taskId);
+        var task = await TaskSearcher(toDoTaskDto.Id);
         if (task != null)
         {
-            task.TaskDescription = editDescription;
-            db.ToDoTasks.Update(task);
-            await db.SaveChangesAsync();
+            task.TaskDescription = toDoTaskDto.TaskDescription;
+            _repository.Update(task);
+            _repository.Save();
             return true;
         }
         return false;

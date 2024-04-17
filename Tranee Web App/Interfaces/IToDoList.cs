@@ -9,7 +9,7 @@ public interface IToDoList
     IEnumerable<ToDoTaskDTO> AllTaskById(int userId);
     Task AddTask(ToDoTaskDTO toDoTask, int userId);
     Task<bool> DelTask(int taskId);
-    Task<bool> UpdateTask(string editDescription, int taskId);
+    Task<bool> UpdateTask(ToDoTaskDTO toDoTaskDto);
     Task<bool> SelectTask(int taskId);
 
 }
