@@ -29,10 +29,6 @@ public class HomeController : Controller
         var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
         var mapper = new Mapper(config);
         var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoList.AllTaskById(userId.Value));
-        
-        // var userName = GetUserName();
-        // if (userName == null) return BadRequest("Name does not exist");
-        // return Ok(_toDoList.AllTask(userName));
         return Ok(todoes);
     }
     
@@ -45,7 +41,6 @@ public class HomeController : Controller
         if (!(userId != null & userName != null)) return BadRequest("Id or Name does not exist");
         await _toDoList.AddTask(toDoTask, userId);
         return Ok(_toDoList.AllTaskById(userId));
-        // return Ok();
     }
 
     [HttpDelete("del-task")]
@@ -80,7 +75,7 @@ public class HomeController : Controller
         var userName = GetUserName();
         if (userName != null)
         {
-            await _toDoList.UpdateTask(toDoTaskDto);
+            _toDoList.UpdateTask(toDoTaskDto);
             return Ok(_toDoList.AllTaskByUserName(userName));
         }
 

@@ -8,7 +8,7 @@ public class ToDoTask
     public int Id { get; set; }
     
     [Required(ErrorMessage = "Enter the task")]
-    [StringLength(1000, ErrorMessage = "Task length is so long, please enter ")]
+    [StringLength(10, ErrorMessage = "Task length is so long, please enter ")]
     public string? TaskDescription { get; set; }
     public bool Selected { get; internal set; }
     public int UserId { get; set; }
