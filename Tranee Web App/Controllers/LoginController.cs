@@ -3,12 +3,8 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Tranee_Web_App;
@@ -19,11 +15,12 @@ public class LoginController : Controller
 {
     ApplicationContext db;
     AuthOptions _options;
-    
+    private HttpContext _httpContext;
 
-    public LoginController(ApplicationContext context)
+    public LoginController(ApplicationContext context, HttpContext httpContext)
     {
         db = context;
+        _httpContext = httpContext;
     }
 
     [HttpGet]
@@ -65,6 +62,13 @@ public class LoginController : Controller
         return Ok(response);
     }
 
+    [HttpGet("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _httpContext.SignOutAsync();
+        return Ok();
+    }
+    
     [HttpGet("AddUser")]
     [Authorize]
     public IActionResult AddUser()

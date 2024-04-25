@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
@@ -13,20 +14,21 @@ public class Program
         string connection = builder.Configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddDbContext<ApplicationContext>(option => option.UseSqlite(connection));
         builder.Services.AddAuthorization();
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = AuthOptions.ISSUER,
-                        ValidateAudience = true,
-                        ValidAudience = AuthOptions.AUDIENCE,
-                        ValidateLifetime = true,
-                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                        ValidateIssuerSigningKey = true,
-                    };
-                });
+        builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme);
+        // builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //     .AddJwtBearer(options =>
+        //         {
+        //             options.TokenValidationParameters = new TokenValidationParameters
+        //             {
+        //                 ValidateIssuer = true,
+        //                 ValidIssuer = AuthOptions.ISSUER,
+        //                 ValidateAudience = true,
+        //                 ValidAudience = AuthOptions.AUDIENCE,
+        //                 ValidateLifetime = true,
+        //                 IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+        //                 ValidateIssuerSigningKey = true,
+        //             };
+        //         });
         builder.Services.AddTransient<IToDoList, ToDoList>();
         builder.Services.AddTransient<IRepository<ToDoTask>, ToDoRepository>();
         

@@ -9,6 +9,7 @@ public class ToDoTaskDTO
         
     [Required(ErrorMessage = "Enter the task")]
     [StringLength(10, ErrorMessage = "Task length is so long, please enter ")]
+    [RegularExpression($"/[A-Z, a-z]/g")]
     public string? TaskDescription { get; set; }
     public bool Selected { get; internal set; }
     // public int UserId { get; set; }
