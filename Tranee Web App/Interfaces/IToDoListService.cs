@@ -3,7 +3,7 @@ using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
 
-public interface IToDoList
+public interface IToDoListService
 {
     IEnumerable<ToDoTaskDTO> AllTaskByUserName(string? userName);
     IEnumerable<ToDoTaskDTO> AllTaskById(int userId);

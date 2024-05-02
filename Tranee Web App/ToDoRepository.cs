@@ -63,4 +63,24 @@ public class ToDoRepository : IRepository<ToDoTask>
     {
         db.SaveChanges();
     }
+    
+    public async Task<ToDoTask> TaskSearcher(int taskId)
+    {
+        var task = await db.ToDoTasks.FirstOrDefaultAsync(t => t.Id == taskId);
+        if (task != null)
+        {
+            return task;
+        }
+        return null;
+    }
+    
+    public async Task<ToDoTask> TaskSearcher(string userName)
+    {
+        var task = await db.ToDoTasks.FirstOrDefaultAsync(t => t.User.Name == userName);
+        if (task != null)
+        {
+            return task;
+        }
+        return null;
+    }
 }

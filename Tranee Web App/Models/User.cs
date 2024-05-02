@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tranee_Web_App.Models;
 
-public class User
+public class User : BaseUser
 {
     public int Id { get; set; }
     [Required (ErrorMessage = "Please enter the name")]

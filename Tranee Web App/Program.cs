@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,22 +15,26 @@ public class Program
         string connection = builder.Configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddDbContext<ApplicationContext>(option => option.UseSqlite(connection));
         builder.Services.AddAuthorization();
-        builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme);
-        // builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        //     .AddJwtBearer(options =>
-        //         {
-        //             options.TokenValidationParameters = new TokenValidationParameters
-        //             {
-        //                 ValidateIssuer = true,
-        //                 ValidIssuer = AuthOptions.ISSUER,
-        //                 ValidateAudience = true,
-        //                 ValidAudience = AuthOptions.AUDIENCE,
-        //                 ValidateLifetime = true,
-        //                 IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-        //                 ValidateIssuerSigningKey = true,
-        //             };
-        //         });
-        builder.Services.AddTransient<IToDoList, ToDoList>();
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "api/login/login";
+            });
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidateAudience = true,
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                        ValidateIssuerSigningKey = true,
+                    };
+                });
+        builder.Services.AddTransient<IToDoListService, ToDoListService>();
         builder.Services.AddTransient<IRepository<ToDoTask>, ToDoRepository>();
         
         builder.Services.AddControllers();

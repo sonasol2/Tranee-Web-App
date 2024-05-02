@@ -15,12 +15,10 @@ public class LoginController : Controller
 {
     ApplicationContext db;
     AuthOptions _options;
-    private HttpContext _httpContext;
 
-    public LoginController(ApplicationContext context, HttpContext httpContext)
+    public LoginController(ApplicationContext context)
     {
         db = context;
-        _httpContext = httpContext;
     }
 
     [HttpGet]
@@ -51,21 +49,22 @@ public class LoginController : Controller
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
                 SecurityAlgorithms.HmacSha256));
         var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-        
+        // var u = ClaimsPrincipal.Current.Identity;
         var response = new
         {
             access_token = encodedJwt,
             username = user.Name,
-            userid = user.Id
+            userid = user.Id,
+            // u = u
         };
-
+        
         return Ok(response);
     }
 
     [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
-        await _httpContext.SignOutAsync();
+        await HttpContext.SignOutAsync();
         return Ok();
     }
     

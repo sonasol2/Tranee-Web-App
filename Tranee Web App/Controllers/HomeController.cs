@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Tranee_Web_App.Models;
@@ -10,15 +11,12 @@ namespace Tranee_Web_App;
 [Authorize]
 public class HomeController : Controller
 {
-    private IRepository<ToDoTask> _repository;
-    private ApplicationContext db;
-    private IToDoList _toDoList;
+    
+    private readonly IToDoListService _toDoListService;
 
-    public HomeController(ApplicationContext context, IToDoList toDoList, IRepository<ToDoTask> repository)
+    public HomeController(IToDoListService toDoListService)
     {
-        db = context;
-        _toDoList = toDoList;
-        _repository = repository;
+        _toDoListService = toDoListService;
     }
     
     [HttpGet]
@@ -28,8 +26,9 @@ public class HomeController : Controller
         if (userId == null) return BadRequest();
         var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
         var mapper = new Mapper(config);
-        var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoList.AllTaskById(userId.Value));
+        var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoListService.AllTaskById(userId.Value));
         return Ok(todoes);
+        
     }
     
     [HttpPut("add-task")]
@@ -39,34 +38,20 @@ public class HomeController : Controller
         var userId = (int)GetUserId();
         var userName = GetUserName();
         if (!(userId != null & userName != null)) return BadRequest("Id or Name does not exist");
-        await _toDoList.AddTask(toDoTask, userId);
-        return Ok(_toDoList.AllTaskById(userId));
+        await _toDoListService.AddTask(toDoTask, userId);
+        return Ok(_toDoListService.AllTaskById(userId));
     }
 
     [HttpDelete("del-task")]
     public IActionResult DelTasks([FromBody]int taskId)
     {
-        var userName = GetUserName();
+        var userName = GetUserName(); //some var
         if (userName == null) return BadRequest("Name does not exist");
-        var b = _toDoList.DelTask(taskId).Result;
-        if (b) return Ok(_toDoList.AllTaskByUserName(userName));
+        var b = _toDoListService.DelTask(taskId).Result;
+        if (b) return Ok(_toDoListService.AllTaskByUserName(userName));
         return BadRequest(ModelState.Values.ToString());
 
     }
-    
-    // [HttpPut("edit-task")]
-    // public async Task<IActionResult> EditTasks([FromBody]string editDescription, int taskId)
-    // {
-    //     if (!ModelState.IsValid) return BadRequest(ModelState.Values.ToString());
-    //     var userName = GetUserName();
-    //     if (userName != null)
-    //     {
-    //         await _toDoList.UpdateTask(editDescription, taskId);
-    //         return Ok(_toDoList.AllTaskByUserName(userName));
-    //     }
-    //
-    //     return BadRequest("Name does not exist");
-    // }
     
     [HttpPut("edit-task")]
     public async Task<IActionResult> EditTasks([FromBody]ToDoTaskDTO toDoTaskDto)
@@ -75,13 +60,12 @@ public class HomeController : Controller
         var userName = GetUserName();
         if (userName != null)
         {
-            _toDoList.UpdateTask(toDoTaskDto);
-            return Ok(_toDoList.AllTaskByUserName(userName));
+            _toDoListService.UpdateTask(toDoTaskDto);
+            return Ok(_toDoListService.AllTaskByUserName(userName));
         }
 
         return BadRequest("Name does not exist");
     }
-
     
     [HttpPost("select-task")]
     public async Task<IActionResult> SelectTasks([FromBody] int taskId)
@@ -89,8 +73,8 @@ public class HomeController : Controller
         var userId = GetUserId();
         var userName = GetUserName();
         if (userId == null & userName != null) return BadRequest("Id or Name does not exist");
-        await _toDoList.SelectTask(taskId);
-        return Ok(_toDoList.AllTaskByUserName(userName));
+        await _toDoListService.SelectTask(taskId);
+        return Ok(_toDoListService.AllTaskByUserName(userName));
 
     }
 
