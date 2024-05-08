@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Tranee_Web_App.Models;
+using Tranee_Web_App.Services;
 
 namespace Tranee_Web_App;
 
@@ -20,22 +21,23 @@ public class Program
             {
                 options.LoginPath = "/api/Login/login";
             });
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = AuthOptions.ISSUER,
-                        ValidateAudience = true,
-                        ValidAudience = AuthOptions.AUDIENCE,
-                        ValidateLifetime = true,
-                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                        ValidateIssuerSigningKey = true,
-                    };
-                });
+        // builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //     .AddJwtBearer(options =>
+        //         {
+        //             options.TokenValidationParameters = new TokenValidationParameters
+        //             {
+        //                 ValidateIssuer = true,
+        //                 ValidIssuer = AuthOptions.ISSUER,
+        //                 ValidateAudience = true,
+        //                 ValidAudience = AuthOptions.AUDIENCE,
+        //                 ValidateLifetime = true,
+        //                 IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+        //                 ValidateIssuerSigningKey = true,
+        //             };
+        //         });
         builder.Services.AddTransient<IToDoListService, ToDoListService>();
         builder.Services.AddTransient<IRepository<ToDoTask>, ToDoRepository>();
+        builder.Services.AddTransient<ILoginService, LoginService>();
         
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();

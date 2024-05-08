@@ -4,7 +4,7 @@ using Duende.IdentityServer.Logging.Models;
 
 namespace Tranee_Web_App.Services;
 
-public class LoginService<User> : ILoginService<User>
+public class LoginService : ILoginService
 {
     // private BaseUser _baseUser;
     

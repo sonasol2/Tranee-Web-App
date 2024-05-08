@@ -7,6 +7,7 @@ namespace Tranee_Web_App;
 public sealed class ApplicationContext : DbContext
 {
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Role> Roles { get; set; } = null;
     public DbSet<ToDoTask> ToDoTasks { get; set; } = null!;
     
     
@@ -17,12 +18,11 @@ public sealed class ApplicationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        
         var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "test.db" };
         var connectionString = connectionStringBuilder.ToString();
         var connection = new SqliteConnection(connectionString);
         optionsBuilder.UseSqlite(connection);
     }
-
-    
     
 }
