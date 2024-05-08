@@ -15,5 +15,7 @@ public class ToDoTask
     [ForeignKey("UserId")]
     public User? User { get; set; }
     
+    public DateTime? DateTime { get; set; }
+    
 
 }

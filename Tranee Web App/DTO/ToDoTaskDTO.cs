@@ -12,7 +12,4 @@ public class ToDoTaskDTO
     // [RegularExpression($"/[A-Z, a-z]/g")]
     public string? TaskDescription { get; set; }
     public bool Selected { get; internal set; }
-    // public int UserId { get; set; }
-    //
-    // public User? User { get; set; }
 }
