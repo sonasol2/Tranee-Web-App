@@ -1,15 +1,20 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Tranee_Web_App.Models;
 
 namespace Tranee_Web_App;
 public class ToDoRepository : IRepository<ToDoTask>
 {
     private ApplicationContext db;
+    private IMemoryCache _cache;
+    private readonly ILogger<ToDoRepository> _logger;
     private bool disposed = false;
 
-    public ToDoRepository(ApplicationContext context)
+    public ToDoRepository(ApplicationContext context, IMemoryCache cache, ILogger<ToDoRepository> logger)
     {
         db = context;
+        _cache = cache;
+        _logger = logger;
     }
     public virtual void Dispose(bool disposing)
     {
@@ -27,9 +32,27 @@ public class ToDoRepository : IRepository<ToDoTask>
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    public IEnumerable<ToDoTask> GetAllTaskById(int userId)
+    public IEnumerable<ToDoTask> GetAllTaskById(int userId) // Необходимо дописать лолгику кеширования для удаления и добавления новый тасок
     {
-        return db.ToDoTasks.Where(u => u.User.Id == userId).ToList();
+        DateTime timeNow = DateTime.Now;
+        var a = _cache.TryGetValue(userId, out List<ToDoTask>? toDoTask);
+        string? log = $"Удалось ли получить данные из кеша:{a}";
+        _logger.LogInformation($"{timeNow}Удалось ли получить данные из кеша:{a}");
+        if (toDoTask == null)
+        {
+            var toDoTasks = db.ToDoTasks.Where(u => u.User.Id == userId).ToList();
+            if (toDoTasks != null)
+            {
+                _cache.Set(userId, toDoTasks,
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                _logger.LogInformation($"{timeNow}Данные внесены в кеш");
+            }
+            _logger.LogInformation($"{timeNow}Взяли только что кешированные данные");
+            return toDoTasks;
+            
+        }
+        _logger.LogInformation($"{timeNow}Взяли старые кешированные данные");
+        return toDoTask;
     }
     
     

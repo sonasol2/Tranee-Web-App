@@ -37,6 +37,8 @@ public class Program
         builder.Services.AddTransient<ILoginService, LoginService>();
         
         builder.Services.AddControllers();
+        builder.Services.AddMemoryCache();
+        builder.Services.AddLogging();
         builder.Services.AddSwaggerGen();
         
         var app = builder.Build();

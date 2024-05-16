@@ -22,11 +22,14 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Index()
     {
+        int userId = GetUserId();
         var userName = GetUserName();
         if (userName == null) return BadRequest();
         var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
         var mapper = new Mapper(config);
-        var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoListService.AllTaskByUserName(userName));
+        // var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoListService.AllTaskByUserName(userName));
+        var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoListService.AllTaskById(userId));
+
         return Ok(todoes);
         
     }
@@ -90,11 +93,11 @@ public class HomeController : Controller
         return userName ?? null;
     }
 
-    public int? GetUserId()
+    public int GetUserId()
     {
         var userId = int.Parse(HttpContext.User.FindFirst("userId")?.Value);
         if (userId != 0) return userId;
-        return null;
+        return 0;
     }
     
 }

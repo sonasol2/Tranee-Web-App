@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 using Tranee_Web_App.DTO;
 using Tranee_Web_App.Models;
 
@@ -7,14 +8,17 @@ namespace Tranee_Web_App;
 public class ToDoListService : IToDoListService
 {
     private IRepository<ToDoTask> _repository;
+    private IMemoryCache _cache;
     
-    public ToDoListService(ApplicationContext context, IRepository<ToDoTask> repository)
+    public ToDoListService(ApplicationContext context, IRepository<ToDoTask> repository, IMemoryCache cache)
     {
         _repository = repository;
+        _cache = cache;
     }
     
     public IEnumerable<ToDoTaskDTO> AllTaskByUserName(string? userName)
     {
+        
         var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
         var mapper = new Mapper(config);
         var todoes = mapper.Map<List<ToDoTaskDTO>>(_repository.GetAllTaskByName(userName));
