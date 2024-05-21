@@ -4,11 +4,11 @@ public interface IRepository<T> : IDisposable where T : class
 {
     IEnumerable<T> GetAllTaskById(int id);
     IEnumerable<T> GetAllTaskByName(string? id);
-    T Get(int id);
-    void Create(T item, int id);
-    void Update(T item);
-    void Delete(int id);
-    void Save();
-    Task<T> TaskSearcher(string userName);
-    Task<T> TaskSearcher(int userId);
+    Task<T> Get(int id);
+    Task CreateAsync(T item, int id);
+    Task Update(T item);
+    Task Delete(int id);
+    Task Save();
+    Task<T> TaskSearcherAsync(string userName);
+    Task<T> TaskSearcherAsync(int userId);
 }

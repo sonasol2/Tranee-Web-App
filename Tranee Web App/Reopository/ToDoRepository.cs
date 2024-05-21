@@ -5,24 +5,25 @@ using Tranee_Web_App.Models;
 namespace Tranee_Web_App;
 public class ToDoRepository : IRepository<ToDoTask>
 {
-    private ApplicationContext db;
-    private IMemoryCache _cache;
+    private readonly ApplicationContext _db;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<ToDoRepository> _logger;
     private bool disposed = false;
 
     public ToDoRepository(ApplicationContext context, IMemoryCache cache, ILogger<ToDoRepository> logger)
     {
-        db = context;
+        _db = context;
         _cache = cache;
         _logger = logger;
     }
-    public virtual void Dispose(bool disposing)
+    
+    protected virtual void Dispose(bool disposing)
     {
         if (!this.disposed)
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
         }
         this.disposed = true;
@@ -34,13 +35,12 @@ public class ToDoRepository : IRepository<ToDoTask>
     }
     public IEnumerable<ToDoTask> GetAllTaskById(int userId) // Необходимо дописать лолгику кеширования для удаления и добавления новый тасок
     {
-        DateTime timeNow = DateTime.Now;
+        DateTime timeNow = DateTime.Now; // надо подумать как это все переделать
         var a = _cache.TryGetValue(userId, out List<ToDoTask>? toDoTask);
-        string? log = $"Удалось ли получить данные из кеша:{a}";
         _logger.LogInformation($"{timeNow}Удалось ли получить данные из кеша:{a}");
         if (toDoTask == null)
         {
-            var toDoTasks = db.ToDoTasks.Where(u => u.User.Id == userId).ToList();
+            var toDoTasks = _db.ToDoTasks.Where(u => u.User.Id == userId).ToList();
             if (toDoTasks != null)
             {
                 _cache.Set(userId, toDoTasks,
@@ -58,38 +58,38 @@ public class ToDoRepository : IRepository<ToDoTask>
     
     public IEnumerable<ToDoTask> GetAllTaskByName(string? userName)
     {
-        return db.ToDoTasks.Where(u => u.User.Name == userName).ToList();
+        return _db.ToDoTasks.Where(u => u.User.Name == userName).ToList();
     }
 
-    public ToDoTask Get(int id)
+    public async Task<ToDoTask> Get(int id)
     {
-        return db.ToDoTasks.Find(id);
+        return await _db.ToDoTasks.FindAsync(id);
     }
 
-    public void Create(ToDoTask item, int id)
+    public async Task CreateAsync(ToDoTask item, int id)
     {
-        db.ToDoTasks.Add(new ToDoTask(){TaskDescription = item.TaskDescription, UserId = id});
+        await _db.ToDoTasks.AddAsync(new ToDoTask(){TaskDescription = item.TaskDescription, UserId = id});
     }
 
-    public void Update(ToDoTask item)
-    {
-        db.Entry(item).State = EntityState.Modified;
+    public async Task Update(ToDoTask item)
+    { 
+        _db.Entry(item).State = EntityState.Modified;
     }
 
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        var toDoTask = db.ToDoTasks.FirstOrDefault(t=> t.Id == id);
-        if (toDoTask != null) db.ToDoTasks.Remove(toDoTask);
+        var toDoTask = await TaskSearcherAsync(id);
+        if (toDoTask != null) _db.ToDoTasks.Remove(toDoTask);
     }
 
-    public void Save()
+    public async Task Save()
     {
-        db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
     
-    public async Task<ToDoTask> TaskSearcher(int taskId)
+    public async Task<ToDoTask> TaskSearcherAsync(int taskId)
     {
-        var task = await db.ToDoTasks.FirstOrDefaultAsync(t => t.Id == taskId);
+        var task = await _db.ToDoTasks.FirstOrDefaultAsync(t => t.Id == taskId);
         if (task != null)
         {
             return task;
@@ -97,9 +97,9 @@ public class ToDoRepository : IRepository<ToDoTask>
         return null;
     }
     
-    public async Task<ToDoTask> TaskSearcher(string userName)
+    public async Task<ToDoTask> TaskSearcherAsync(string userName)
     {
-        var task = await db.ToDoTasks.FirstOrDefaultAsync(t => t.User.Name == userName);
+        var task = await _db.ToDoTasks.FirstOrDefaultAsync(t => t.User.Name == userName);
         if (task != null)
         {
             return task;

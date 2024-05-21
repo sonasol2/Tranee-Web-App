@@ -20,14 +20,11 @@ public class HomeController : Controller
     }
     
     [HttpGet]
-    public IActionResult Index()
+    public IActionResult Index() // получается следуюя принципам restApi необходимо поменять так чтобы здесь ничего не изменялось 
     {
         int userId = GetUserId();
-        var userName = GetUserName();
-        if (userName == null) return BadRequest();
         var config = new MapperConfiguration(cfg => cfg.CreateMap<ToDoTask, ToDoTaskDTO>());
         var mapper = new Mapper(config);
-        // var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoListService.AllTaskByUserName(userName));
         var todoes = mapper.Map<List<ToDoTaskDTO>>(_toDoListService.AllTaskById(userId));
 
         return Ok(todoes);
@@ -62,7 +59,7 @@ public class HomeController : Controller
         var userName = GetUserName();
         if (userName != null)
         {
-            _toDoListService.UpdateTask(toDoTaskDto);
+            await _toDoListService.UpdateTask(toDoTaskDto);
             return Ok(_toDoListService.AllTaskByUserName(userName));
         }
 

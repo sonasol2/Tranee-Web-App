@@ -40,13 +40,13 @@ public class ToDoListService : IToDoListService
                 );
             var mapper = new Mapper(config);
             ToDoTask toDoTask = mapper.Map<ToDoTaskDTO, ToDoTask>(task);
-            _repository.Create(toDoTask, userId);
+            _repository.CreateAsync(toDoTask, userId);
             _repository.Save(); 
     }
     
     public async Task<bool> DelTask(int taskId)
     {
-        var task = _repository.TaskSearcher(taskId);
+        var task = _repository.TaskSearcherAsync(taskId);
         
         if (taskId != null)
         {
@@ -59,7 +59,7 @@ public class ToDoListService : IToDoListService
     
     public async Task<bool> UpdateTask(ToDoTaskDTO toDoTaskDto)
     {
-        var task = await _repository.TaskSearcher(toDoTaskDto.Id);
+        var task = await _repository.TaskSearcherAsync(toDoTaskDto.Id);
         
         if (task != null)
         {
@@ -73,7 +73,7 @@ public class ToDoListService : IToDoListService
     
     public async Task<bool> SelectTask(int taskId)
     {
-        var task = _repository.TaskSearcher(taskId).Result;
+        var task = _repository.TaskSearcherAsync(taskId).Result;
         
         if (task != null)
         {
